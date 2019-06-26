@@ -1,0 +1,39 @@
+{
+  "name": "@andimeier/cas-authentication-middleware",
+  "version": "0.0.1",
+  "description": "A CAS authentication library designed to be used as middleware for an Express server.",
+  "keywords": [
+    "cas",
+    "central authentication service",
+    "saml",
+    "auth",
+    "authentication",
+    "login",
+    "middleware",
+    "express"
+  ],
+  "homepage": "https://github.com/andimeier/cas-authentication-middleware",
+  "bugs": {
+    "url": "https://github.com/andimeier/cas-authentication-middleware/issues"
+  },
+  "license": "MIT",
+  "author": "Andreas Meier <andimeier@gmx.net",
+  "contributors": [
+    "Andi Meier <andimeier@gmx.net>"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=6.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andimeier/cas-authentication-middleware.git"
+  },
+  "dependencies": {
+    "cas-authentication-ajax": "0.0.10",
+    "lodash": "^4.17.11",
+    "url": "^0.11.0",
+    "xml2js": "^0.4.19"
+  },
+  "devDependencies": {}
+}
