@@ -48,7 +48,7 @@ function casHandler(req, res, next) {
   // remember current session to be able to find it again after the CAS cycle
   console.log("---[CAS]---> starting CAS cycle ...");
   req.session = req.session || {};
-  req.session[options.session_targetUrl] = casHelpers.fullUrl(req);
+  req.session[options.session_targetUrl] = getAbsoluteUrl(req);
   console.log(
     `---[CAS]---> targetUrl = ${req.session[options.session_targetUrl]}`
   );
@@ -63,6 +63,20 @@ function casHandler(req, res, next) {
 
   console.log(`---[CAS]---> redirect to ${redirectUrl}`);
   res.redirect(redirectUrl);
+}
+
+/**
+ * Build an absolute URL pointing to exactly the page which has been requested
+ * right now. This is necessary to "park" the URL and later, after CAS login,
+ * perform a redirect to it. This enabled us to do "deep linking".
+ *
+ * Following the discussion on
+ * https://stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express,
+ * I decided to use the function like this
+ * @param {*} req
+ */
+function getAbsoluteUrl(req) {
+  return req.protocol + "://" + req.get("host") + req.originalUrl;
 }
 
 module.exports = {
