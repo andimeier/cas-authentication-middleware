@@ -29,7 +29,6 @@ app.use("/", (req, res, next) => {
 });
 
 app.use("/cas", authCas.casRouter);
-//app.use(authCas.casHandler);
 
 // the "client app" which will be called only when authentication has been done
 app.get("/client", authCas.casHandler, function(req, res) {

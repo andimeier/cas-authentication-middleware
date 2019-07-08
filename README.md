@@ -2,17 +2,51 @@
 
 This is a CAS authentication library designed to be used as middleware in an Express server.
 
+The use case is a Node Express app which delivers the backend (the "API") as well as the frontend (the "client"),
+where the backend and client are protected resources. The client routes will be equipped with an automatic CAS cycle in case
+there is no active session.
+
 ## Installation
 
-    npm install cas-authentication-middleware
+    npm install --save cas-authentication-middleware
 
-## Setup
+## Basic setup
+
+The setup consists of 3 steps:
+
+1. include lib and initialize it
+2. _after_ a session middleware, "use" this CAS authentication middleware
+3. add the `casHandler` middleware function to the routes delivering the client
+
+### Include lib and initialize it
+
+The only initialization parameter is the URL of the CAS server:
 
 ```javascript
 const cas = require("cas-authentication-middleware").init({
   casServer: "http://cas.server.url"
 });
 ```
+
+### Use CAS authentication middleware
+
+Use the following line in your Express server to include the CAS middleware:
+
+```javascript
+app.use("/cas", authCas.casRouter);
+```
+
+Note, that this middleware relies on a session middleware already set up and put _before_ the CAS middleware, so be sure to "use" your session middleware before.
+
+By adding the CAS middleware, the CAS routes are installed. These routes are needed as endpoints for login, validating CAS tickets etc.
+It basically provides all the infrastructure for executing the CAS cycle.
+
+### Add `casHandler` to protect client
+
+The `casHandler` is a middleware function protecting the client. It will ensure that there is a valid user session. If not, the CAS cycle is initiated.
+After successful CAS login, you will be redirected to the URL requested in the first place - this time backed by a valid session.
+
+## Options
 
 The `init` function receives an option object:
 
@@ -41,9 +75,13 @@ Additionally, there are some more configuration options:
 | session_info    |            _string_             | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |   _false_    |
 | destroy_session |            _boolean_            | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user.                                                                                                                                                                   |   _false_    |
 
-## Provided middleware functions
+## Internal information
 
-### Negotiating CAS login/logout
+You don't neeed this information to use this CAS middleware. It just documents what is "under the hood".
+
+### Provided middleware functions
+
+#### Negotiating CAS login/logout
 
 It provides some middleware functions for controlling access to routes:
 
@@ -53,29 +91,8 @@ It provides some middleware functions for controlling access to routes:
 - `redirectToFrontend`: redirects to the frontend
 - `logout`: De-authenticates the client with the Express server and then redirects them to the CAS logout page.
 
-### Access control
+#### Access control
 
 - `bounce`: Redirects an unauthenticated client to the CAS login page and then back to the requested page.
 - `block`: Completely denies access to an unauthenticated client and returns a 401 response.
 - `bounce_redirect`: Acts just like `bounce` but once the client is authenticated they will be redirected to the provided _returnTo_ query parameter.
-
-## Usage
-
-```javascript
-const cas = require("cas-authentication-middleware").init({
-  casServer: config.cas.server
-});
-
-// add CAS routes
-router.get("/cas/login", cas.casLogin);
-// return the target URL back to the frontend, so the frontend can then perform a redirect to
-// this target URL (this time backed by a valid CAS authenticated session)
-router.get("/cas/startSession", cas.startSession, cas.returnTargetUrl);
-router.post("/cas", cas.possibleCasLogout, function(req, res) {
-  res.send("nothing else to do");
-});
-router.get("/cas", cas.redirectToFrontend);
-
-// application routes
-router.get("/someData", cas.block, someData.getAll); // resource protected by cas.block
-```
