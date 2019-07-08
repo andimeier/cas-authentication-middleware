@@ -1,15 +1,9 @@
-const CASAuthentication = require("./lib/cas-authentication");
-const url = require("url");
 const _ = require("lodash");
 const casRouter = require("./lib/cas-router.js");
-var parseXML = require("xml2js").parseString;
-var XMLprocessors = require("xml2js/lib/processors");
 const casHelpers = require("./lib/cas-helper-functions");
 
 // name of session property holding the user ID
 const session_userId = "userId";
-
-const casRouterPrefix = "cas";
 
 /**
  * initialisation functions
@@ -21,7 +15,7 @@ function init(_options) {
 
   casHelpers.periodicRemoveExpiredTickets(options.expiredSessionsCheckInterval);
 
-  casHelpers.init();
+  casHelpers.init(_options);
   return module.exports;
 }
 
@@ -54,15 +48,15 @@ function casHandler(req, res, next) {
   );
 
   // build service URL
-  let serviceUrl = casHelpers.buildServiceUrl(req);
+  let serviceUrl = casHelpers.getServiceUrl(req);
   console.log(`---[CAS]---> set serviceUrl to ${serviceUrl}`);
 
-  let redirectUrl = casHelpers.getCasServerUrl(`login`, {
+  let casServerUrl = casHelpers.getCasServerUrl(`login`, {
     service: serviceUrl
   });
 
-  console.log(`---[CAS]---> redirect to ${redirectUrl}`);
-  res.redirect(redirectUrl);
+  console.log(`---[CAS]---> redirect to ${casServerUrl}`);
+  res.redirect(casServerUrl);
 }
 
 /**

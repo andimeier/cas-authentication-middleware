@@ -10,9 +10,7 @@ This is a CAS authentication library designed to be used as middleware in an Exp
 
 ```javascript
 const cas = require("cas-authentication-middleware").init({
-  casServer: "http://cas.server.url",
-  service_url: "https://backend.server.com",
-  frontend_url: "https://frontend.server.com/application"
+  casServer: "http://cas.server.url"
 });
 ```
 
@@ -26,11 +24,9 @@ The most basic config options are:
 
 The following basic options are required:
 
-| Name         |   Type   | Description                                                                            |   Default    |
-| :----------- | :------: | :------------------------------------------------------------------------------------- | :----------: |
-| caseServer   | _string_ | The URL of the CAS server.                                                             | _(required)_ |
-| service_url  | _string_ | The URL of the application which is registered with the CAS server as a valid service. | _(required)_ |
-| frontend_url | _string_ | The URL of the application frontend.                                                   | _(required)_ |
+| Name       |   Type   | Description                |   Default    |
+| :--------- | :------: | :------------------------- | :----------: |
+| caseServer | _string_ | The URL of the CAS server. | _(required)_ |
 
 Additionally, there are some more configuration options:
 
@@ -67,9 +63,7 @@ It provides some middleware functions for controlling access to routes:
 
 ```javascript
 const cas = require("cas-authentication-middleware").init({
-  casServer: config.cas.server,
-  service_url: config.gui.backendUrl,
-  frontend_url: config.frontendUrl
+  casServer: config.cas.server
 });
 
 // add CAS routes

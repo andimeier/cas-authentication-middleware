@@ -5,9 +5,7 @@ const session = require("express-session");
 const CAS_SERVER = "http://localhost:3003";
 
 const authCas = require("../index.js").init({
-  casServer: CAS_SERVER,
-  service_url: "http://localhost:3017/cas/validate",
-  frontend_url: "http://localhost:3017/client"
+  casServer: CAS_SERVER
 });
 
 const port = 3017;
