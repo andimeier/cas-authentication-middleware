@@ -2,7 +2,13 @@
 var express = require("express");
 const session = require("express-session");
 
-const authCas = require("../index.js");
+const CAS_SERVER = "http://localhost:3003";
+
+const authCas = require("../index.js").init({
+  casServer: CAS_SERVER,
+  service_url: "http://localhost:3017/cas/validate",
+  frontend_url: "http://localhost:3017/client"
+});
 
 const port = 3017;
 
@@ -18,10 +24,17 @@ app.use(
   })
 );
 
-//app.use(authCas);
+app.use("/", (req, res, next) => {
+  console.log("\n\n");
+  console.log(`---- APP ----> incoming request: ${req.originalUrl}`);
+  next();
+});
+
+app.use("/cas", authCas.casRouter);
+//app.use(authCas.casHandler);
 
 // the "client app" which will be called only when authentication has been done
-app.get("/client", function(req, res) {
+app.get("/client", authCas.casHandler, function(req, res) {
   res.render("index", {
     title: "Hey",
     message: `Hello there, ${req.session.userId}!`

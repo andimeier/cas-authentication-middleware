@@ -30,8 +30,8 @@
     "url": "https://github.com/andimeier/cas-authentication-middleware.git"
   },
   "dependencies": {
-    "cas-authentication-ajax": "0.0.10",
     "lodash": "^4.17.11",
+    "request": "^2.88.0",
     "url": "^0.11.0",
     "xml2js": "^0.4.19"
   },
@@ -39,5 +39,9 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "pug": "^2.0.4"
+  },
+  "scripts": {
+    "start": "cd demo && node ./server.js",
+    "inspect": "cd demo && node --inspect ./server.js"
   }
 }
