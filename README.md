@@ -33,7 +33,7 @@ const cas = require("cas-authentication-middleware").init({
 Use the following line in your Express server to include the CAS middleware:
 
 ```javascript
-app.use("/cas", authCas.casRouter);
+app.use("/cas", cas.casRouter);
 ```
 
 Note, that this middleware relies on a session middleware already set up and put _before_ the CAS middleware, so be sure to "use" your session middleware before.
@@ -43,8 +43,18 @@ It basically provides all the infrastructure for executing the CAS cycle.
 
 ### Add `casHandler` to protect client
 
-The `casHandler` is a middleware function protecting the client. It will ensure that there is a valid user session. If not, the CAS cycle is initiated.
+The `casHandler` is a middleware function protecting the client. It will ensure that there is a valid user session when the client is loaded. If not, the CAS cycle is initiated.
 After successful CAS login, you will be redirected to the URL requested in the first place - this time backed by a valid session.
+
+So, when the client is started, the CAS authentication has already been done.
+
+```javascript
+router.use(
+  "/client",
+  cas.casHandler,
+  express.static(path.resolve(path.dirname(require.main.filename), "client"))
+);
+```
 
 ## Options
 
