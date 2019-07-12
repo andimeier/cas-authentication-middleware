@@ -33,8 +33,8 @@ app.use("/cas", authCas.casRouter);
 // the "client app" which will be called only when authentication has been done
 app.get("/client", authCas.casHandler, function(req, res) {
   res.render("index", {
-    title: "Hey",
-    message: `Hello there, ${req.session.userId}!`
+    title: "Client page",
+    user: req.session.userId
   });
 });
 

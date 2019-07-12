@@ -42,6 +42,7 @@
   },
   "scripts": {
     "start": "cd demo && node ./server.js",
-    "inspect": "cd demo && node --inspect ./server.js"
+    "inspect": "cd demo && node --inspect ./server.js",
+    "demo": "node demo/server.js"
   }
 }

@@ -5,13 +5,26 @@ const casHelpers = require("./lib/cas-helper-functions");
 // name of session property holding the user ID
 const session_userId = "userId";
 
+let devMode = {
+  enabled: false,
+  user: null,
+  info: null
+};
+
 /**
  * initialisation functions
  *
  * @return {object} the module itself (for fluid interface syntax like const cas = require('cas-authentication-middleware').init(...))
  */
 function init(_options) {
-  options = casHelpers.registerOptions(_options);
+  let options = casHelpers.registerOptions(_options);
+
+  if (options.devMode) {
+    devMode.enabled = true;
+    devMode.user = devModeUser;
+    devMode.info = devModeInfo;
+    return; // no further CAS setup in dev mode
+  }
 
   casHelpers.periodicRemoveExpiredTickets(options.expiredSessionsCheckInterval);
 
@@ -38,6 +51,11 @@ function casHandler(req, res, next) {
   }
 
   // start CAS cycle
+  if (devMode.enabled) {
+    req.session = req.session || {};
+    req.session[options.session_name] = devMode.user;
+    return;
+  }
 
   // remember current session to be able to find it again after the CAS cycle
   console.log("---[CAS]---> starting CAS cycle ...");

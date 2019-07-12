@@ -78,9 +78,9 @@ Additionally, there are some more configuration options:
 | :-------------- | :-----------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------: |
 | cas_version     | _"1.0"\|"2.0\|"3.0"\|"saml1.1"_ | The CAS protocol version.                                                                                                                                                                                                                                                                                                 |   _"3.0"_    |
 | renew           |            _boolean_            | If true, an unauthenticated client will be required to login to the CAS system regardless of whether a single sign-on session exists.                                                                                                                                                                                     |   _false_    |
-| is_dev_mode     |            _boolean_            | If true, no CAS authentication will be used and the session CAS variable will be set to whatever user is specified as _dev_mode_user_.                                                                                                                                                                                    |   _false_    |
-| dev_mode_user   |            _string_             | The CAS user to use if dev mode is active.                                                                                                                                                                                                                                                                                |     _""_     |
-| dev_mode_info   |            _Object_             | The CAS user information to use if dev mode is active.                                                                                                                                                                                                                                                                    |     _{}_     |
+| devMode         |            _boolean_            | If true, no CAS authentication will be used and the session CAS variable will be set to whatever user is specified as _devModeUser_.                                                                                                                                                                                      |   _false_    |
+| devModeUser     |            _string_             | The CAS user to use if dev mode is active.                                                                                                                                                                                                                                                                                |     _""_     |
+| devModeInfo     |            _Object_             | The CAS user information to use if dev mode is active.                                                                                                                                                                                                                                                                    |     _{}_     |
 | session_name    |            _string_             | The name of the session variable that will store the CAS user once they are authenticated.                                                                                                                                                                                                                                | _"cas_user"_ |
 | session_info    |            _string_             | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |   _false_    |
 | destroy_session |            _boolean_            | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user.                                                                                                                                                                   |   _false_    |
@@ -106,3 +106,22 @@ It provides some middleware functions for controlling access to routes:
 - `bounce`: Redirects an unauthenticated client to the CAS login page and then back to the requested page.
 - `block`: Completely denies access to an unauthenticated client and returns a 401 response.
 - `bounce_redirect`: Acts just like `bounce` but once the client is authenticated they will be redirected to the provided _returnTo_ query parameter.
+
+## Demo
+
+The included demo server shows the basic usage.
+
+### Start
+
+Start the demo server with
+
+    npm run demo
+
+This will launch a server listening on port 3017.
+
+In the browser, try to load the client with:
+
+    http://localhost:3017/client
+
+This should trigger the CAS login (note that a CAS server has to be present for this).
+After successful login, the client page is displayed, displaying the logged in user.
