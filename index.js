@@ -11,6 +11,7 @@ let devMode = {
   info: null
 };
 
+
 /**
  * initialisation functions
  *
@@ -19,11 +20,13 @@ let devMode = {
 function init(_options) {
   let options = casHelpers.registerOptions(_options);
 
+  console.log('NEW NEW NEW NEW NEW NEW, dev mode: ' + options.devMode);
+
   if (options.devMode) {
     devMode.enabled = true;
-    devMode.user = devModeUser;
-    devMode.info = devModeInfo;
-    return; // no further CAS setup in dev mode
+    devMode.user = options.devModeUser;
+    devMode.info = options.devModeInfo;
+    console.log(`dev mode => the user to be used would be: ${devMode.user} (not set yet, this is just an info)`);
   }
 
   casHelpers.periodicRemoveExpiredTickets(options.expiredSessionsCheckInterval);
@@ -40,21 +43,28 @@ function init(_options) {
  * @param {*} next
  */
 function casHandler(req, res, next) {
-  if (req.session && req.session[session_userId]) {
+  let options = casHelpers.options;
+
+  if (req.session && req.session[options.sessionName]) {
     console.log(
       `---[CAS]---> session available (userId: ${
-        req.session[session_userId]
+        req.session[options.sessionName]
       }) => no CAS cycle => next()`
     );
     next();
     return;
   }
 
-  // start CAS cycle
+  // no session user => start CAS cycle?
   if (devMode.enabled) {
     req.session = req.session || {};
-    req.session[options.session_name] = devMode.user;
+    req.session[options.sessionName] = devMode.user;
+    req.session[options.session_info] = devMode.info;
+    console.log(`---[CAS]---> ---> dev mode => set session user to ${devMode.user}`);
+    next();
     return;
+  } else {
+    console.log('---[CAS]---> not in dev mode');
   }
 
   // remember current session to be able to find it again after the CAS cycle
@@ -91,8 +101,35 @@ function getAbsoluteUrl(req) {
   return req.protocol + "://" + req.get("host") + req.originalUrl;
 }
 
+
+/**
+ * return user data of the session user.
+ *
+ * @param req   The request object
+ * @return {object} the session user object consisting of { userId, userInfo}. userId is the ID of the logged in user,
+ *   userInfo is any additional information we got from the CAS server as user attributes. The "userInfo" property can
+ *   be null if not set. If no active session is in place, the returned object will contain only the property "userId" with
+ *   a value of null.
+ */
+function getSessionInfo(req) {
+  let options = casHelpers.options;
+
+  if (req.session && req.session[options.sessionName]) { 
+    return {
+      userId: req.session[options.sessionName],
+      userInfo: req.session[options.session_info]
+    };
+  } else {
+    return {
+      userId: null
+    };
+  }
+}
+
+
 module.exports = {
   init,
   casHandler,
-  casRouter
+  casRouter,
+  getSessionInfo
 };
