@@ -105,6 +105,11 @@ It provides some middleware functions for controlling access to routes:
 - `possibleCasLogout`: do a logout (does nothing at the moment)
 - `redirectToFrontend`: redirects to the frontend
 - `logout`: De-authenticates the client with the Express server and then redirects them to the CAS logout page.
+- `getSessionInfo`: retrieve session info about the logged in user: it consists of { userId, userInfo }. `userId` is the username used with the CAS login,
+  `userInfo` are any additional attributes the CAS login process provided about the user (this is an optional CAS feature)
+- `ensureSession`: express endpoint function which ensures there is a valid session. If there is none, a CAS cycle will be done. This should only be relevant in 
+  dev mode because with dev mode switched off, the scenario would be that the client would only be delivered when the CAS auth middleware has set up a 
+  session. So the situation where we need `ensureSession` would not occur.
 
 #### Access control
 
