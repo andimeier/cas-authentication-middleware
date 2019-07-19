@@ -77,7 +77,7 @@ function casHandler(req, res, next) {
   // remember current session to be able to find it again after the CAS cycle
   console.log("---[CAS]---> starting CAS cycle ...");
   req.session = req.session || {};
-  req.session[options.session_targetUrl] = getAbsoluteUrl(req);
+  req.session[options.session_targetUrl] = getAbsoluteUrl(casHelpers.options.backendBaseUrl, req);
   console.log(
     `---[CAS]---> targetUrl = ${req.session[options.session_targetUrl]}`
   );
@@ -102,9 +102,15 @@ function casHandler(req, res, next) {
  * Following the discussion on
  * https://stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express,
  * I decided to use the function like this
+ * @param {*} backendBaseUrl backend base URL
  * @param {*} req
  */
-function getAbsoluteUrl(req) {
+function getAbsoluteUrl(backendBaseUrl, req) {
+
+  if (backendBaseUrl) {
+    return backendBaseUrl + req.originalUrl;
+  } 
+  
   return req.protocol + "://" + req.get("host") + req.originalUrl;
 }
 
