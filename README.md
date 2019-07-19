@@ -82,8 +82,13 @@ Additionally, there are some more configuration options:
 | devModeUser     |            _string_             | The CAS user to use if dev mode is active.                                                                                                                                                                                                                                                                                |     _""_     |
 | devModeInfo     |            _Object_             | The CAS user information to use if dev mode is active.                                                                                                                                                                                                                                                                    |     _{}_     |
 | sessionName    |            _string_             | The name of the session variable that will store the CAS user once they are authenticated.                                                                                                                                                                                                                                | _"cas_user"_ |
-| session_info    |            _string_             | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |   _false_    |
+| sessionInfo    |            _string_             | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |   _false_    |
 | destroy_session |            _boolean_            | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user.                                                                                                                                                                   |   _false_    |
+
+## Dev mode
+
+In development phase, it can be desirable to short-circuit the CAS mechanism. This can be done by setting the options `devMode` and `devModeUser`. 
+If these options are provided, then no CAS login will take place. Instead, the specified "dev user" will be used to populate a valid session with.
 
 ## Internal information
 

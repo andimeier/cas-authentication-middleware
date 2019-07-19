@@ -59,7 +59,7 @@ function casHandler(req, res, next) {
   if (devMode.enabled) {
     req.session = req.session || {};
     req.session[options.sessionName] = devMode.user;
-    req.session[options.session_info] = devMode.info;
+    req.session[options.sessionInfo] = devMode.info;
     console.log(`---[CAS]---> ---> dev mode => set session user to ${devMode.user}`);
     next();
     return;
@@ -117,7 +117,7 @@ function getSessionInfo(req) {
   if (req.session && req.session[options.sessionName]) { 
     return {
       userId: req.session[options.sessionName],
-      userInfo: req.session[options.session_info]
+      userInfo: req.session[options.sessionInfo]
     };
   } else {
     return {
