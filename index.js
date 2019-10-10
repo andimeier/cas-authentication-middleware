@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const casRouter = require("./lib/cas-router.js");
 const casHelpers = require("./lib/cas-helper-functions");
+const logger = require("./lib/logger");
 
 // name of session property holding the user ID
 const session_userId = "userId";
@@ -19,16 +20,18 @@ let devMode = {
 function init(_options) {
   let options = casHelpers.registerOptions(_options);
 
-  console.log("NEW NEW NEW NEW NEW NEW, dev mode: " + options.devMode);
+  if (_options.logger) {
+    logger.setLogger(_options.logger);
+  }
+
+  logger.verbose("NEW NEW NEW NEW NEW NEW, dev mode: " + options.devMode);
 
   if (options.devMode) {
     devMode.enabled = true;
     devMode.user = options.devModeUser;
     devMode.info = options.devModeInfo;
-    console.log(
-      `dev mode => the user to be used would be: ${
-        devMode.user
-      } (not set yet, this is just an info)`
+    logger.verbose(
+      `dev mode => the user to be used would be: ${devMode.user} (not set yet, this is just an info)`
     );
   }
 
@@ -51,8 +54,8 @@ function casHandler(req, res, next) {
   debugger;
 
   if (req.session && req.session[options.sessionName]) {
-    console.log(
-      `---[CAS]---> session available (userId: ${
+    logger.verbose(
+      `session available (userId: ${
         req.session[options.sessionName]
       }) => no CAS cycle => next()`
     );
@@ -65,32 +68,31 @@ function casHandler(req, res, next) {
     req.session = req.session || {};
     req.session[options.sessionName] = devMode.user;
     req.session[options.sessionInfo] = devMode.info;
-    console.log(
-      `---[CAS]---> ---> dev mode => set session user to ${devMode.user}`
-    );
+    logger.verbose(`dev mode => set session user to ${devMode.user}`);
     next();
     return;
   } else {
-    console.log("---[CAS]---> not in dev mode");
+    logger.verbose("not in dev mode");
   }
 
   // remember current session to be able to find it again after the CAS cycle
-  console.log("---[CAS]---> starting CAS cycle ...");
+  logger.verbose("starting CAS cycle ...");
   req.session = req.session || {};
-  req.session[options.session_targetUrl] = getAbsoluteUrl(casHelpers.options.backendBaseUrl, req);
-  console.log(
-    `---[CAS]---> targetUrl = ${req.session[options.session_targetUrl]}`
+  req.session[options.session_targetUrl] = getAbsoluteUrl(
+    casHelpers.options.backendBaseUrl,
+    req
   );
+  cologger.verbose(`targetUrl = ${req.session[options.session_targetUrl]}`);
 
   // build service URL
   let serviceUrl = casHelpers.getServiceUrl(req);
-  console.log(`---[CAS]---> set serviceUrl to ${serviceUrl}`);
+  `set serviceUrl to ${serviceUrl}`;
 
   let casServerUrl = casHelpers.getCasServerUrl(`login`, {
     service: serviceUrl
   });
 
-  console.log(`---[CAS]---> redirect to ${casServerUrl}`);
+  logger.verbose(`redirect to ${casServerUrl}`);
   res.redirect(casServerUrl);
 }
 
@@ -106,11 +108,10 @@ function casHandler(req, res, next) {
  * @param {*} req
  */
 function getAbsoluteUrl(backendBaseUrl, req) {
-
   if (backendBaseUrl) {
     return backendBaseUrl + req.originalUrl;
-  } 
-  
+  }
+
   return req.protocol + "://" + req.get("host") + req.originalUrl;
 }
 
@@ -142,17 +143,17 @@ function getSessionInfo(req) {
 /**
  * make sure there is a user session. If it is not, trigger one (via CAS or in dev mode)
  * This function can be used to be sure that the session is set up before the app launches.
- * 
+ *
  * Otherwise, you could face the situation that the app loads, retrieves the user name (which
  * might empty at this stage because no login has happened so far) and leaves you with an
  * empty user info object.
- * 
+ *
  * On the other hand, if you make use of this function, you can be sure that a valid session
  * is set up before the app starts. When fetching the session user would be the first action
  * of the app, it will return the session user correctly now.
- * 
- * @param {*} req 
- * @param {*} res 
+ *
+ * @param {*} req
+ * @param {*} res
  */
 function ensureSession(req, res) {
   // the things to be done are exactly the same as the "casHandler" does, with the difference,

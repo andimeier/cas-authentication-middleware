@@ -70,12 +70,13 @@ The following basic options are required:
 
 | Name       |   Type   | Description                |   Default    |
 | :--------- | :------: | :------------------------- | :----------: |
-| caseServer | _string_ | The URL of the CAS server. | _(required)_ |
+| casServer | _string_ | The URL of the CAS server. | _(required)_ |
 
 Additionally, there are some more configuration options:
 
 | Name            |              Type               | Description                                                                                                                                                                                                                                                                                                               |   Default    |
 | :-------------- | :-----------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------: |
+| logger     | _string_ | _"1.0"\|"2.0\|"3.0"\|"saml1.1"_ | A logging function. If set, all logging output will be sent to this function. If omitted, stdout will be used. The log message will contain a marker indicating the severity (in the log message itself).                                                                                     
 | cas_version     | _string_ | _"1.0"\|"2.0\|"3.0"\|"saml1.1"_ | The CAS protocol version.                                                                                       
 |   backendBaseUrl | necessary for node servers behind a reverse proxy which might manipulate the path so that the request at the node server does not know the correct entire path - we would not be able to reconstruct the absolute path for the redirect back to the client (target). So, this setting is necessary when the app sits behind a reverse proxy.
                                                                                                                                                                                                           |   _"3.0"_    |
