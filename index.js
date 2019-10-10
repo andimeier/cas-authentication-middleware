@@ -82,7 +82,7 @@ function casHandler(req, res, next) {
     casHelpers.options.backendBaseUrl,
     req
   );
-  cologger.verbose(`targetUrl = ${req.session[options.session_targetUrl]}`);
+  logger.verbose(`targetUrl = ${req.session[options.session_targetUrl]}`);
 
   // build service URL
   let serviceUrl = casHelpers.getServiceUrl(req);
