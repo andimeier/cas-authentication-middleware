@@ -20,8 +20,8 @@ let devMode = {
 function init(_options) {
   let options = casHelpers.registerOptions(_options);
 
-  if (_options.logger) {
-    logger.setLogger(_options.logger);
+  if (options.logger) {
+    logger.setLogger(options.logger);
   }
 
   logger.verbose("NEW NEW NEW NEW NEW NEW, dev mode: " + options.devMode);
