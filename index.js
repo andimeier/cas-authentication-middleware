@@ -51,8 +51,6 @@ function init(_options) {
 function casHandler(req, res, next) {
   let options = casHelpers.options;
 
-  debugger;
-
   if (req.session && req.session[options.sessionName]) {
     logger.verbose(
       `session available (userId: ${
@@ -127,7 +125,6 @@ function getAbsoluteUrl(backendBaseUrl, req) {
 function getSessionInfo(req) {
   let options = casHelpers.options;
 
-  debugger;
   if (req.session && req.session[options.sessionName]) {
     return {
       userId: req.session[options.sessionName],
