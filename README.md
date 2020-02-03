@@ -68,25 +68,26 @@ The most basic config options are:
 
 The following basic options are required:
 
-| Name       |   Type   | Description                |   Default    |
-| :--------- | :------: | :------------------------- | :----------: |
-| casServer | _string_ | The URL of the CAS server. | _(required)_ |
+| Name      |   Type   | Description                |
+| :-------- | :------: | :------------------------- |
+| casServer | `string` | The URL of the CAS server. |
 
 Additionally, there are some more configuration options:
 
-| Name            |              Type               | Description                                                                                                                                                                                                                                                                                                               |   Default    |
-| :-------------- | :-----------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------: |
-| logger     | _string_ | _"1.0"\|"2.0\|"3.0"\|"saml1.1"_ | A logging function. If set, all logging output will be sent to this function. If omitted, stdout will be used. The log message will contain a marker indicating the severity (in the log message itself).                                                                                     
-| cas_version     | _string_ | _"1.0"\|"2.0\|"3.0"\|"saml1.1"_ | The CAS protocol version.                                                                                       
-|   backendBaseUrl | necessary for node servers behind a reverse proxy which might manipulate the path so that the request at the node server does not know the correct entire path - we would not be able to reconstruct the absolute path for the redirect back to the client (target). So, this setting is necessary when the app sits behind a reverse proxy.
-                                                                                                                                                                                                          |   _"3.0"_    |
-| renew           |            _boolean_            | If true, an unauthenticated client will be required to login to the CAS system regardless of whether a single sign-on session exists.                                                                                                                                                                                     |   _false_    |
-| devMode         |            _boolean_            | If true, no CAS authentication will be used and the session CAS variable will be set to whatever user is specified as _devModeUser_.                                                                                                                                                                                      |   _false_    |
-| devModeUser     |            _string_             | The CAS user to use if dev mode is active.                                                                                                                                                                                                                                                                                |     _""_     |
-| devModeInfo     |            _Object_             | The CAS user information to use if dev mode is active.                                                                                                                                                                                                                                                                    |     _{}_     |
-| sessionName    |            _string_             | The name of the session variable that will store the CAS user once they are authenticated.                                                                                                                                                                                                                                | _"cas_user"_ |
-| sessionInfo    |            _string_             | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |   _false_    |
-| destroy_session |            _boolean_            | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user.                                                                                                                                                                   |   _false_    |
+| Name | Type | Default | Description |
+| :--- | :--: | :-----: | :---------- |
+| logger | `function` | `null` | A logging function. If set, all logging output will be sent to this function. If omitted, stdout will be used. The log message will contain a marker indicating the severity (in the log message itself). |
+| cas_version | `"1.0"` \| `"2.0"` \| `"3.0"` \| `"saml1.1"` | `"2.0"` | The CAS protocol version. |
+| backendBaseUrl | `string` | `null` | Necessary for node servers behind a reverse proxy which might manipulate the path so that the request at the node server does not know the correct entire path - we would not be able to reconstruct the absolute path for the redirect back to the client (target). So, this setting is necessary when the app sits behind a reverse proxy. |
+| renew | `boolean` | `false` | If true, an unauthenticated client will be required to login to the CAS system regardless of whether a single sign-on session exists. |
+| devMode | `boolean` | `false` | If true, no CAS authentication will be used and the session CAS variable will be set to whatever user is specified as `devModeUser`. |
+| devModeUser | `string` | `""` | The CAS user to use if dev mode is active. |
+| devModeInfo | `Object` | `{}` | The CAS user information to use if dev mode is active. |
+| sessionName | `string` | `"cas_user"` | The name of the session variable that will store the CAS user once they are authenticated. |
+| sessionInfo | `string` | `false` | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |
+| destroy_session | `boolean` | `false` | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user. |
+| checkUser | `(username: string) => Promise<string\|object>` | `null` | This function is called to verify that the user is permitted by the application after they have authenticated. It is passed the username provided by the CAS server and it should return the user object, which will be stored in the `user` variable in the session. On an error or when the user is not authorized, it should return a string with the corresponding message. |
+| onUnauthorizedUser | `(err: any, username: string, res: Express.Response) => void` | `null` | This function is called when the user was not auhtorized (the `checkUser` function rejeted). It is passed the error, the username from the CAS server and the [`Express.Response`](https://expressjs.com/en/4x/api.html#res) object to send a custom response. |
 
 ## Dev mode
 
