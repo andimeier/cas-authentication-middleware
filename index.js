@@ -67,7 +67,8 @@ function casHandler(req, res, next) {
     req.session[options.sessionName] = devMode.user;
     req.session[options.sessionInfo] = devMode.info;
     logger.verbose(`dev mode => set session user to ${devMode.user}`);
-    next();
+    // assume successful login via cas
+    casHelpers.startSession(req, res, next);
     return;
   } else {
     logger.verbose("not in dev mode");
