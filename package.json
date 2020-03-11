@@ -1,6 +1,6 @@
 {
   "name": "@andimeier/cas-authentication-middleware",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A CAS authentication library designed to be used as middleware for an Express server.",
   "keywords": [
     "cas",
