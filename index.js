@@ -165,5 +165,6 @@ module.exports = {
   casHandler,
   casRouter,
   getSessionInfo,
-  ensureSession
+  ensureSession,
+  block: casHelpers.block
 };
