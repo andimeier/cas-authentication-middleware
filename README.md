@@ -20,11 +20,12 @@ The setup consists of 3 steps:
 
 ### Include lib and initialize it
 
-The only initialization parameter is the URL of the CAS server:
+The only initialization parameters are the URL of the CAS server and explicitly setting the backendBaseUrl to `false`:
 
 ```javascript
 const cas = require("cas-authentication-middleware").init({
-  casServer: "http://cas.server.url"
+  casServer: "http://cas.server.url",
+  backendBaseUrl: false
 });
 ```
 
@@ -71,23 +72,25 @@ The following basic options are required:
 | Name      |   Type   | Description                |
 | :-------- | :------: | :------------------------- |
 | casServer | `string` | The URL of the CAS server. |
+| backendBaseUrl | `string` \| `false` | Necessary for node servers behind a reverse proxy which might manipulate the path so that the request at the node server does not know the correct entire path - we would not be able to reconstruct the absolute path for the redirect back to the client (target). So, this setting is necessary when the app sits behind a reverse proxy. Otherwise set it to `false` to tell the middleware that we are not behind a reverse proxy. |
 
 Additionally, there are some more configuration options:
 
 | Name | Type | Default | Description |
 | :--- | :--: | :-----: | :---------- |
 | logger | `function` | `null` | A logging function. If set, all logging output will be sent to this function. If omitted, stdout will be used. The log message will contain a marker indicating the severity (in the log message itself). |
-| cas_version | `"1.0"` \| `"2.0"` \| `"3.0"` \| `"saml1.1"` | `"2.0"` | The CAS protocol version. |
-| backendBaseUrl | `string` | `null` | Necessary for node servers behind a reverse proxy which might manipulate the path so that the request at the node server does not know the correct entire path - we would not be able to reconstruct the absolute path for the redirect back to the client (target). So, this setting is necessary when the app sits behind a reverse proxy. |
+| cas_version | `"1.0" | "2.0" | "3.0" | "saml1.1"` | `"2.0"` | The CAS protocol version. |
 | renew | `boolean` | `false` | If true, an unauthenticated client will be required to login to the CAS system regardless of whether a single sign-on session exists. |
 | devMode | `boolean` | `false` | If true, no CAS authentication will be used and the session CAS variable will be set to whatever user is specified as `devModeUser`. |
 | devModeUser | `string` | `""` | The CAS user to use if dev mode is active. |
 | devModeInfo | `Object` | `{}` | The CAS user information to use if dev mode is active. |
-| sessionName | `string` | `"cas_user"` | The name of the session variable that will store the CAS user once they are authenticated. |
-| sessionInfo | `string` | `false` | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |
+| sessionName | `string` | `"userId"` | The name of the session variable that will store the CAS user once they are authenticated. |
+| sessionInfo | `string` | `"cas_userinfo"` | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. |
 | destroy_session | `boolean` | `false` | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user. |
-| checkUser | `(username: string) => Promise<string\|object>` | `null` | This function is called to verify that the user is permitted by the application after they have authenticated. It is passed the username provided by the CAS server and it should return the user object, which will be stored in the `user` variable in the session. On an error or when the user is not authorized, it should return a string with the corresponding message. |
-| onUnauthorizedUser | `(req: Express.Request, res: Express.Response, username: string, err: any) => boolean` | `null` | This function is called when the user was not auhtorized (the `checkUser` function rejeted). It is passed the [`Express.Request`](https://expressjs.com/en/4x/api.html#req) object to access the session, the [`Express.Response`](https://expressjs.com/en/4x/api.html#res) object to send a custom response, the username from the CAS server and the error. If it returns `true`, the middleware passes on to the next request handler |
+| checkUser | `(username: string) => Promise<string|object>` | `null` | This function is called to verify that the user is permitted by the application after they have authenticated. It is passed the username provided by the CAS server and it should return the user object, which will be stored in the `user` variable in the session. On an error or when the user is not authorized, it should return a string with the corresponding message. |
+| onUnauthorizedUser | `(req: Express.Request, res: Express.Response, username: string, err: any) => boolean` | `null` | This function is called when the user was not auhtorized (the `checkUser` function rejected). It is passed the [`Express.Request`](https://expressjs.com/en/4x/api.html#req) object to access the session, the [`Express.Response`](https://expressjs.com/en/4x/api.html#res) object to send a custom response, the username from the CAS server and the error. If it returns `true`, the middleware passes on to the next request handler |
+| casRouterPrefix | `string` | `/cas` | The full path where the cas router is mounted. Used to redirect to the login url. Don't forget to mount the router! |
+| frontend_url | `string` | `null` | The URL to redirect to when no target url was given in query parameters. Typically the url to the frontend |
 
 ## Dev mode
 
@@ -117,9 +120,8 @@ It provides some middleware functions for controlling access to routes:
 
 #### Access control
 
-- `bounce`: Redirects an unauthenticated client to the CAS login page and then back to the requested page.
 - `block`: Completely denies access to an unauthenticated client and returns a 401 response.
-- `bounce_redirect`: Acts just like `bounce` but once the client is authenticated they will be redirected to the provided _returnTo_ query parameter.
+- `bounce_redirect`: Redirects an unauthenticated client to the CAS login page and then back to the provided _returnTo_ query parameter.
 
 ## Demo
 
