@@ -30,19 +30,21 @@
     "url": "https://github.com/andimeier/cas-authentication-middleware.git"
   },
   "dependencies": {
-    "lodash": "^4.17.11",
-    "request": "^2.88.0",
+    "lodash": "^4.17.19",
+    "request": "^2.88.2",
     "url": "^0.11.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "eslint": "^7.5.0",
     "express": "^4.17.1",
-    "express-session": "^1.16.2",
+    "express-session": "^1.17.1",
     "pug": "^2.0.4"
   },
   "scripts": {
     "start": "cd demo && node ./server.js",
     "inspect": "cd demo && node --inspect ./server.js",
-    "demo": "node demo/server.js"
+    "demo": "node demo/server.js",
+    "lint": "eslint --fix \"lib/**\""
   }
 }

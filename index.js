@@ -1,10 +1,6 @@
-const _ = require("lodash");
 const casRouter = require("./lib/cas-router.js");
 const casHelpers = require("./lib/cas-helper-functions");
 const logger = require("./lib/logger");
-
-// name of session property holding the user ID
-const session_userId = "userId";
 
 let devMode = {
   enabled: false,
@@ -24,7 +20,7 @@ function init(_options) {
     logger.setLogger(options.logger);
   }
 
-  logger.verbose("NEW NEW NEW NEW NEW NEW, dev mode: " + options.devMode);
+  logger.verbose("dev mode: " + options.devMode);
 
   if (options.devMode) {
     devMode.enabled = true;
@@ -34,8 +30,6 @@ function init(_options) {
       `dev mode => the user to be used would be: ${devMode.user} (not set yet, this is just an info)`
     );
   }
-
-  casHelpers.periodicRemoveExpiredTickets(options.expiredSessionsCheckInterval);
 
   casHelpers.init(_options);
   return module.exports;
@@ -62,37 +56,15 @@ function casHandler(req, res, next) {
   }
 
   // no session user => start CAS cycle?
-  if (devMode.enabled) {
-    req.session = req.session || {};
-    req.session[options.sessionName] = devMode.user;
-    req.session[options.sessionInfo] = devMode.info;
-    logger.verbose(`dev mode => set session user to ${devMode.user}`);
-    // assume successful login via cas
-    casHelpers.startSession(req, res, next);
-    return;
-  } else {
-    logger.verbose("not in dev mode");
-  }
+  // dev mode is handled by the login function
 
-  // remember current session to be able to find it again after the CAS cycle
   logger.verbose("starting CAS cycle ...");
-  req.session = req.session || {};
-  req.session[options.session_targetUrl] = getAbsoluteUrl(
+  let params = new URLSearchParams();
+  params.set("target", getAbsoluteUrl(
     casHelpers.options.backendBaseUrl,
     req
-  );
-  logger.verbose(`targetUrl = ${req.session[options.session_targetUrl]}`);
-
-  // build service URL
-  let serviceUrl = casHelpers.getServiceUrl(req);
-  `set serviceUrl to ${serviceUrl}`;
-
-  let casServerUrl = casHelpers.getCasServerUrl(`login`, {
-    service: serviceUrl
-  });
-
-  logger.verbose(`redirect to ${casServerUrl}`);
-  res.redirect(casServerUrl);
+  ));
+  res.redirect(casHelpers.getUrlPathToSelf(casHelpers.options.casRouterPrefix, "login") + "?" + params.toString());
 }
 
 /**
