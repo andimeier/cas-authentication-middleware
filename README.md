@@ -18,6 +18,8 @@ The setup consists of 3 steps:
 2. _after_ a session middleware, "use" this CAS authentication middleware
 3. add the `casHandler` middleware function to the routes delivering the client
 
+This lib will throw an error if no session object is found!
+
 ### Include lib and initialize it
 
 The only initialization parameters are the URL of the CAS server and explicitly setting the backendBaseUrl to `false`:
