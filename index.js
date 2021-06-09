@@ -80,7 +80,8 @@ function casHandler(req, res, next) {
  */
 function getAbsoluteUrl(backendBaseUrl, req) {
   if (backendBaseUrl) {
-    return backendBaseUrl + req.originalUrl;
+    // remove any double / in the url except after the protocol
+    return (backendBaseUrl + req.originalUrl).replace(/(?<!:)\/\//g, "/");
   }
 
   return req.protocol + "://" + req.get("host") + req.originalUrl;
